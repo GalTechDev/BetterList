@@ -1,4 +1,3 @@
-Certainly! Here's a simple README.md for your C library to get users started:
 
 ---
 
