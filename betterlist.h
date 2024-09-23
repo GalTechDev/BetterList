@@ -11,10 +11,16 @@ typedef struct Element Element;
 struct Element {
   Object *value;
   Element *next;
+  Object *key;
 };
 
 typedef struct List List;
 struct List {
+  Element *premier;
+};
+
+typedef struct Dict Dict;
+struct Dict {
   Element *premier;
 };
 
@@ -23,11 +29,20 @@ struct Float {
   double value;
 };
 
+typedef struct None None;
+struct None {
+  char *type;
+};
+
 extern List *list_init();
 
-Float *float_init(double value);
+extern List *dict_init();
 
 extern Object *list();
+
+extern Object *dict();
+
+extern Object *none();
 
 extern Object *integer(int value);
 
@@ -35,14 +50,20 @@ extern Object *floating(double value);
 
 extern Object *string(int value);
 
+extern void clear(Object *);
+
 extern int len(Object *);
 
-extern void add(Object *, Object *value);
+extern void append(Object *, Object *value);
 
-extern void pop(Object *, int);
+extern void insert(Object *, Object *key, Object *value);
 
-extern Object *get(Object *, int);
+extern void del(Object *, Object *key);
 
-extern void printObject(Object *object, char *end);
+extern Element *pop(Object *, Object *key);
+
+extern Object *get(Object *, Object *key);
+
+extern char *toString(Object *object);
 
 #endif
