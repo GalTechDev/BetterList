@@ -3,7 +3,7 @@
 
 # BetterList C Library
 
-BetterList is a C library that allows you to create list and dictionary with multiple data types. This library provides a flexible and easy-to-use interface for managing lists in your C programs.
+BetterList is a C library that allows you to create list and dictionary with multiple data types. This library provides a flexible and easy-to-use interface for managing Object in your C programs.
 
 ## Getting Started
 
