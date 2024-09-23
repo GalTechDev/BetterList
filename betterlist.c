@@ -21,16 +21,42 @@ List *list_init() {
   return list;
 }
 
-Float *float_init(double value) {
-  Float *Float = malloc(sizeof(*Float));
-  Float->value = value;
-  return Float;
-}
-
 Object *list() {
   Object *object = malloc(sizeof(*object));
   object->type = "list";
   object->value = list_init();
+  return object;
+}
+
+Object *dict() {
+  Object *object = malloc(sizeof(*object));
+  object->type = "dict";
+  object->value = dict_init();
+  return object;
+}
+
+List *dict_init() {
+  List *dict = malloc(sizeof(*list));
+  Element *element = malloc(sizeof(*element));
+  Element *last = malloc(sizeof(*last));
+
+  if (dict == NULL || element == NULL) {
+    exit(EXIT_FAILURE);
+  }
+  int *first = malloc(sizeof(*first));
+
+  last->value = first;
+  last->next = NULL;
+  element->value = first;
+  element->next = last;
+  dict->premier = element;
+
+  return dict;
+}
+
+Object *none() {
+  Object *object = malloc(sizeof(*object));
+  object->type = "None";
   return object;
 }
 
@@ -44,7 +70,9 @@ Object *integer(int value) {
 Object *floating(double value) {
   Object *object = malloc(sizeof(*object));
   object->type = "float";
-  object->value = float_init(value);
+  Float *Float = malloc(sizeof(*Float));
+  Float->value = value;
+  object->value = Float;
   return object;
 }
 
@@ -55,22 +83,43 @@ Object *string(int value) {
   return object;
 }
 
-int len(Object *list) {
-  List *list_core = list->value;
-  if (list_core == NULL) {
-    return 0;
-  } else {
-    Element *actual = list_core->premier->next;
-    int nb = 0;
-    while (actual->next != NULL) {
-      nb = nb + 1;
-      actual = actual->next;
+void clear(Object *object) {
+  
+}
+
+int len(Object *object) {
+  if (object->type == "list") {
+    List *object_core = object->value;
+    if (object_core == NULL) {
+      return 0;
+    } else {
+      Element *actual = object_core->premier->next;
+      int nb = 0;
+      while (actual->next != NULL) {
+        nb = nb + 1;
+        actual = actual->next;
+      }
+      return nb;
     }
-    return nb;
+  } else if (object->type == "dict") {
+    Dict *object_core = object->value;
+    if (object_core == NULL) {
+      return 0;
+    } else {
+      Element *actual = object_core->premier->next;
+      int nb = 0;
+      while (actual->next != NULL) {
+        nb = nb + 1;
+        actual = actual->next;
+      }
+      return nb;
+    }
+  } else {
+    return -1;
   }
 }
 
-void add(Object *list, Object *value) {
+void append(Object *list, Object *value) {
   /* Création du nouvel élément */
   List *list_core = list->value;
   Element *actual = list_core->premier;
@@ -88,68 +137,188 @@ void add(Object *list, Object *value) {
   actual->next = nouveau;
 }
 
-void pop(Object *list, int index) {
-  List *list_core = list->value;
-  Element *actual = list_core->premier->next;
-  int i = 0;
-  while (i < index) {
-    actual = actual->next;
-    i++;
+void insert(Object *object, Object *key, Object *value) {
+  if (object->type == "list") {
+   // TODO
+  } else if (object->type == "dict") {
+    Dict *dict_core = object->value;
+    Element *actual = dict_core->premier;
+    Element *nouveau = malloc(sizeof(*nouveau));
+    if (dict_core == NULL || nouveau == NULL) {
+      exit(EXIT_FAILURE);
+    }
+    nouveau->key = key;
+    nouveau->value = value;
+    while (actual->next->next != NULL) {
+      actual = actual->next;
+    }
+
+    /* Insertion de l'élément a la fin du dico */
+    nouveau->next = actual->next;
+    actual->next = nouveau;
   }
-  Element *precedant = list_core->premier;
-  int j = 0;
-  while (j < index) {
-    precedant = precedant->next;
-    j++;
-  }
-  precedant->next = actual->next;
-  free(actual);
 }
 
-Object *get(Object *list, int index) {
-  List *list_core = list->value;
+Element *pop(Object *object, Object *key) {
+  if (object->type == "list") {
+    List *list_core = object->value;
+    Element *actual = list_core->premier->next;
+    int i = 0;
+    while (i < index) {
+      actual = actual->next;
+      i++;
+    }
+    Element *precedant = list_core->premier;
+    int j = 0;
+    while (j < index) {
+      precedant = precedant->next;
+      j++;
+    }
+    precedant->next = actual->next;
+    return actual->value;
+    
+  } else if (object->type == "dict") {
+    List *dict_core = object->value;
+    Element *actual = dict_core->premier->next;
+    int i = 0;
+    while (actual->next != NULL) {
+      if (actual->key->type == key->type) {
+        if (actual->key->value == key->value) {
+          break;
+        }
+      }
+      actual = actual->next;
+      i++;
+    }
 
-  Element *actual = list_core->premier->next;
-  int i = 0;
-  while (i != index) {
-    actual = actual->next;
-    i++;
+    Element *precedant = dict_core->premier;
+    int j = 0;
+    while (actual->next != NULL) {
+      if (j == i) {
+        precedant->next = actual->next;
+        return actual->value;
+      } else {
+        precedant = precedant->next;
+        j++;
+      }
+    }
   }
-  return actual->value;
+  return none();
 }
 
-extern void printObject(Object *object, char *end) {
-  if (object->type == "int") { // int
-    printf("%s %d%s", object->type, object->value, end);
+void del(Object *object, Object *key) { free(pop(object, key)); }
+
+Object *get(Object *object, Object *key) {
+  if (object->type == "list") {
+    List *list_core = object->value;
+
+    Element *actual = list_core->premier->next;
+    int i = 0;
+    while (actual->next != NULL) {
+      if (i == key) {
+        return actual->value;
+      } else {
+        actual = actual->next;
+        i++;
+      }
+    }
+
+  } else if (object->type == "dict") {
+    List *dict_core = object->value;
+    Element *actual = dict_core->premier->next;
+
+    while (actual->next != NULL) {
+      if (actual->key->type == key->type) {
+        if (actual->key->value == key->value) {
+          return actual->value;
+        }
+      }
+      actual = actual->next;
+    }
+  }
+  return none();
+}
+
+extern char *toString(Object *object) {
+  char *str = malloc(100); // Allocate memory for the string
+  if (str == NULL) {
+    exit(EXIT_FAILURE); // Handle memory allocation failure
+  }
+  str[0] = '\0'; // Initialize the string as empty
+  if (object == NULL || object->type == "None") {
+    strcat(str, "None");
+
+  } else if (object->type == "int") { // int
+    char int_str[50];
+    sprintf(int_str, "%d", object->value);
+    strcat(str, int_str);
 
   } else if (object->type == "float") { // float
     Float *Float_object = object->value;
-    double double_value = Float_object->value;
-    printf("%s %f%s", object->type, Float_object->value, end);
+    char float_str[50];
+    sprintf(float_str, "%f", Float_object->value);
+    strcat(str, float_str);
 
   } else if (object->type == "str") { // str
-    printf("%s '%s'%s", object->type, object->value, end);
+    char string_str[50];
+    sprintf(string_str, "'%s'", object->value);
+    strcat(str, string_str);
 
   } else if (object->type == "list") { // list
     List *list = object->value;
     if (list == NULL) {
-      printf("list []%s", end);
+      strcat(str, "[]");
 
     } else {
-      printf("list [");
+      strcat(str, "[");
       Element *actual = list->premier->next;
       int i = 0;
       while (i != len(object)) {
-        printObject(actual->value, "");
+
+        char *element_str = toString(actual->value);
+        strcat(str, element_str);
+        free(element_str); // Free the temporary string
+
         actual = actual->next;
         i++;
         if (i != len(object)) {
-          printf(", ");
+          strcat(str, ", ");
         }
       }
-      printf("]%s", end);
+      strcat(str, "]");
+    }
+  } else if (object->type == "dict") { // list
+    Dict *dict = object->value;
+    if (dict == NULL) {
+      strcat(str, "{}");
+
+    } else {
+      strcat(str, "{");
+      Element *actual = dict->premier->next;
+      int i = 0;
+      while (i != len(object)) {
+        char *key_str = toString(actual->key);
+        char *value_str = toString(actual->value);
+
+        strcat(str, key_str);
+        strcat(str, " : ");
+        strcat(str, value_str);
+
+        free(key_str);
+        free(value_str);
+
+        actual = actual->next;
+        i++;
+        if (i != len(object)) {
+          strcat(str, ", ");
+        }
+      }
+      strcat(str, "}");
     }
   } else {
-    printf("<object at @%d>%s", object, end);
+    char object_str[50];
+    sprintf(object_str, "<object at @%d>", object);
+    strcat(str, object_str);
   }
+  return str;
 }
