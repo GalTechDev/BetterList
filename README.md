@@ -154,7 +154,15 @@ This is the output of the provided example :
 
 ![Capture d’écran_2024-09-23_16-50-22](https://github.com/user-attachments/assets/68253649-94ca-4aa0-ad6d-3f2545ea98f2)
 
-
+## TODO
+- [ ] keys()
+- [ ] values()
+- [ ] items()
+- [ ] insert() for list
+- [ ] set()
+- [ ] clear()
+- [ ] update()
+- [ ] existe()
 
 ## Contributing
 
