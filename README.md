@@ -45,16 +45,20 @@ Before using BetterList, make sure you have the following prerequisites installe
       append(table, line);    // append a list
 
       // Clear a list
-      //clear(line); not implemented !!
-
-        
-      /* Not implemented !!
-      // Insert elements to the end of a list
-      insert(line, 0, nb1);     // append an integer
-      insert(line, 0, nbfloat);  // append a float
-      insert(line, 0, nbtext);   // append a string
-      insert(table, 0, line);    // append a list
-      */
+      printf("before list clear : %s\n", toString(line)); 
+      clear(line);
+      printf("after list clear : %s\n", toString(line)); 
+      
+      set(line, 0, nb1);     // append an integer
+      set(line, 1, nbfloat);  // append a float
+      //set(line, 2, nbtext);   // append a string
+      set(table, 0, line);    // append a list
+    
+      printf("after list set : %s\n", toString(line)); 
+    
+      insert(line, 1, nbtext);     // insert a string
+    
+      printf("after list insert : %s\n", toString(line)); 
     
       // Access elements in the list
       Object *nb2 = get(line, 0); // get a Element
@@ -67,10 +71,20 @@ Before using BetterList, make sure you have the following prerequisites installe
 
     ```c
       // Print information
-      printf("%d\n", len(line));  // print the number of elements in the list
-      printf("%s\n", toString(nb2));      // print an object (<value>)
-      printf("%s\n", toString(get(line, 0))); // print an element in the list [<value1>, <value2>, ...]
-      printf("%s\n", toString(table));       // print a list of lists
+      printf("len of list %d\n", len(line));  // print the number of elements in the list
+      printf("element nb2 : %s\n", toString(nb2));      // print an object (<value>)
+      printf("element of line[0] : %s\n", toString(get(line, 0))); // print an element in the list [<value1>, <value2>, ...]
+      printf("liste 'table' : %s\n", toString(table));       // print a list of lists
+    
+      // Free memory
+      Object *nb1_copy = pop(line, 0);
+      del(line, 0);
+    
+      printf("'nb1_copy' the result of pop 0: %s\n", toString(nb1_copy));
+      printf("liste 'table' : %s\n", toString(table));
+      printf("index 0 existe ? %d\n", existe(line, 0));
+      clear(line);
+      printf("index 0 existe ? (after clear) %d\n", existe(line, 0));
     ```
 
 5. Remove element
