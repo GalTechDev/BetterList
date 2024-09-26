@@ -84,7 +84,17 @@ Object *string(int value) {
 }
 
 void clear(Object *object) {
-  
+  if (object->type == "list") {
+    while (len(object)>0) {
+      pop(object, 0);
+    }
+  } else if (object->type == "dict") {
+    while (len(object)>0) {
+      Object *list_keys = keys(object);
+      Object *key = get(list_keys, 0);
+      pop(object, key);
+    }
+  }
 }
 
 int len(Object *object) {
@@ -137,25 +147,32 @@ void append(Object *list, Object *value) {
   actual->next = nouveau;
 }
 
-void insert(Object *object, Object *key, Object *value) {
-  if (object->type == "list") {
-   // TODO
-  } else if (object->type == "dict") {
-    Dict *dict_core = object->value;
-    Element *actual = dict_core->premier;
-    Element *nouveau = malloc(sizeof(*nouveau));
-    if (dict_core == NULL || nouveau == NULL) {
-      exit(EXIT_FAILURE);
-    }
-    nouveau->key = key;
-    nouveau->value = value;
-    while (actual->next->next != NULL) {
-      actual = actual->next;
+void insert(Object *list, Object *key, Object *value) {
+  if (list->type == "list") {
+    List *list_core = list->value;
+    Element *actual = list_core->premier;
+    int i = 0;
+
+    if (key > len(list)) {
+      key = len(list);
     }
 
-    /* Insertion de l'élément a la fin du dico */
-    nouveau->next = actual->next;
-    actual->next = nouveau;
+    // Find the position to insert
+    while (actual->next != NULL && i < key) {
+      actual = actual->next;
+      i++;
+    }
+
+    // Create the new element
+    Element *nouveau = malloc(sizeof(*nouveau));
+    if (list_core == NULL || nouveau == NULL) {
+      exit(EXIT_FAILURE);
+    }
+    nouveau->value = value;
+
+    // Insert the new element
+    nouveau->next = actual->next; 
+    actual->next = nouveau; 
   }
 }
 
@@ -164,13 +181,13 @@ Element *pop(Object *object, Object *key) {
     List *list_core = object->value;
     Element *actual = list_core->premier->next;
     int i = 0;
-    while (i < index) {
+    while (i < key) {
       actual = actual->next;
       i++;
     }
     Element *precedant = list_core->premier;
     int j = 0;
-    while (j < index) {
+    while (j < key) {
       precedant = precedant->next;
       j++;
     }
@@ -237,6 +254,136 @@ Object *get(Object *object, Object *key) {
     }
   }
   return none();
+}
+
+void set(Object *object, Object *key, Object *value) {
+  if (object->type == "list") {
+    List *list_core = object->value;
+    if (key >= len(object) || len(object)==0) {
+      // If the index is out of bounds, append the value
+      append(object, value);
+    } else {
+      // If the index is within bounds, replace the existing value
+      Element *actual = list_core->premier->next;
+      int i = 0;
+      while (actual->next != NULL) {
+        if (i == key) {
+          actual->value = value;
+          break;
+        } else {
+          actual = actual->next;
+          i++;
+        }
+      }
+    }
+  } else if (object->type == "dict") {
+    Dict *dict_core = object->value;
+    Element *actual = dict_core->premier->next;
+
+    // Check if the key already exists
+    while (actual->next != NULL) {
+      if (actual->key->type == key->type && actual->key->value == key->value) {
+        // Update the value if the key exists
+        actual->value = value;
+        return; // Exit the function after updating
+      }
+      actual = actual->next;
+    }
+
+    // If the key doesn't exist, add a new key-value pair
+    Element *nouveau = malloc(sizeof(*nouveau));
+    if (dict_core == NULL || nouveau == NULL) {
+      exit(EXIT_FAILURE);
+    }
+    nouveau->key = key;
+    nouveau->value = value;
+    nouveau->next = dict_core->premier->next;
+    dict_core->premier->next = nouveau; 
+  }
+}
+
+Object *keys(Object *object) {
+  if (object->type == "dict") {
+    Dict *dict_core = object->value;
+    Element *actual = dict_core->premier->next;
+    Object *keys_list = list();
+    while (actual->next != NULL) {
+      append(keys_list, actual->key);
+      actual = actual->next;
+    }
+    return keys_list;
+  }
+}
+
+Object *values(Object *object) {
+  if (object->type == "dict") {
+    Dict *dict_core = object->value;
+    Element *actual = dict_core->premier->next;
+    Object *values_list = list();
+    while (actual->next != NULL) {
+      append(values_list, actual->value);
+      actual = actual->next;
+    }
+    return values_list;
+  }
+}
+
+Object *items(Object *object) {
+  if (object->type == "dict") {
+    Dict *dict_core = object->value;
+    Element *actual = dict_core->premier->next;
+    Object *items_list = list();
+    while (actual->next != NULL) {
+      Object *item = list();
+      append(item, actual->key);
+      append(item, actual->value);
+      append(items_list, item);
+      actual = actual->next;
+    }
+    return items_list;
+  }
+}
+
+void update(Object *object_a, Object *object_b) {
+  if (object_a->type == "dict" && object_b->type == "dict") {
+    Object *keys_b = keys(object_b);
+    for (int i = 0; i < len(keys_b); i++) {
+      Object *key = get(keys_b, i);
+      Object *value = get(object_b, key);
+      set(object_a, key, value);
+    }
+  }
+}
+
+int existe(Object *object, Object *key) {
+  if (object->type == "list") {
+    List *list_core = object->value;
+    Element *actual = list_core->premier->next;
+    int i = 0;
+    while (actual->next != NULL) {
+      if (i == key) {
+        return 1;
+      } else {
+        actual = actual->next;
+        i++;
+      }
+    }
+    return 0;
+
+  } else if (object->type == "dict") {
+    List *dict_core = object->value;
+    Element *actual = dict_core->premier->next;
+
+    while (actual->next != NULL) {
+      if (actual->key->type == key->type) {
+        if (actual->key->value == key->value) {
+          return 1;
+        }
+      }
+      actual = actual->next;
+    }
+  }
+  return 0;
 }
 
 extern char *toString(Object *object) {
