@@ -96,6 +96,13 @@ void dict_demo() {
   printf("element nb2 : %s\n", toString(nb2));      // print an object <value>
   printf("element of dico1['line'] : %s\n", toString(get(dico1, string("line")))); // print an element in the dict
   printf("dict 'dico2' : %s\n", toString(dico2));       // print a dict of dict
+  
+  printf("nb1 existe ? %d\n", existe(dico1, string("nb1")));
+  printf("nb2 existe ? %d\n", existe(dico1, string("nb2")));
+
+  printf("keys of 'dico1' %s\n", toString(keys(dico1)));
+  printf("values of 'dico1' %s\n", toString(values(dico1)));
+  printf("items of 'dico1' %s\n", toString(items(dico1)));
 
   // Free memory
   Object *nb1_copy = pop(dico1, string("nbtext"));
@@ -103,18 +110,12 @@ void dict_demo() {
 
   printf("'nb1_copy' result of pop 'nbtext' : %s\n", toString(nb1_copy));
   printf("dict 'dico1' : %s\n", toString(dico1));
-  printf("nb1 existe ? %d\n", existe(dico1, string("nb1")));
-  printf("nb2 existe ? %d\n", existe(dico1, string("nb2")));
-
-  printf("keys of 'dico1' %s\n", toString(keys(dico1)));
-  printf("values of 'dico1' %s\n", toString(values(dico1)));
-  printf("items of 'dico1' %s\n", toString(items(dico1)));
 }
 
 int main() {
 
   //list_demo();
-  dict_demo();
+  //dict_demo();
 
   return 0;
 }
