@@ -95,8 +95,7 @@ Check the provided example in the `main.c` file for a quick demonstration of Bet
 
 This is the output of the provided example :
 
-![Capture d’écran_2024-09-23_16-51-21](https://github.com/user-attachments/assets/78c0f40b-d285-499a-b1c8-2d341ebf8838)
-
+![Capture d’écran_2024-09-26_08-38-48](https://github.com/user-attachments/assets/8f81972a-b1d7-41e5-a6e0-65225ebf6301)
 
 ### Usage of Dictionary
 
@@ -144,10 +143,17 @@ This is the output of the provided example :
    
    ```c
       // Print information
-      printf("%d\n", len(dico1));  // print the number of elements in the list
-      printf("%s\n", toString(nb2));      // print an object <value>
-      printf("%s\n", toString(get(dico1, string("line")))); // print an element in the dict
-      printf("%s\n", toString(dico2));       // print a dict of dict
+      printf("len of dict : %d\n", len(dico1));  // print the number of elements in the list
+      printf("element nb2 : %s\n", toString(nb2));      // print an object <value>
+      printf("element of dico1['line'] : %s\n", toString(get(dico1, string("line")))); // print an element in the dict
+      printf("dict 'dico2' : %s\n", toString(dico2));       // print a dict of dict
+   
+      printf("nb1 existe ? %d\n", existe(dico1, string("nb1")));
+      printf("nb2 existe ? %d\n", existe(dico1, string("nb2")));
+    
+      printf("keys of 'dico1' %s\n", toString(keys(dico1)));
+      printf("values of 'dico1' %s\n", toString(values(dico1)));
+      printf("items of 'dico1' %s\n", toString(items(dico1)));
     ```
 
 5. Remove element
@@ -166,17 +172,7 @@ Check the provided example in the `main.c` file for a quick demonstration of Bet
 
 This is the output of the provided example :
 
-![Capture d’écran_2024-09-23_16-50-22](https://github.com/user-attachments/assets/68253649-94ca-4aa0-ad6d-3f2545ea98f2)
-
-## TODO
-- [ ] keys()
-- [ ] values()
-- [ ] items()
-- [ ] insert() for list
-- [ ] set()
-- [ ] clear()
-- [ ] update()
-- [ ] existe()
+![Capture d’écran_2024-09-26_08-38-11](https://github.com/user-attachments/assets/5e0d997f-6418-484d-8de5-ea5b739d2246)
 
 ## Contributing
 
