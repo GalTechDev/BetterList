@@ -64,6 +64,18 @@ extern Element *pop(Object *, Object *key);
 
 extern Object *get(Object *, Object *key);
 
+extern void set(Object *, Object *key, Object *value);
+
+extern Object *keys(Object *);
+
+extern Object *values(Object *);
+
+extern Object *items(Object *);
+
+extern void update(Object *, Object *);
+
+extern int existe(Object *, Object *);
+
 extern char *toString(Object *object);
 
 #endif
